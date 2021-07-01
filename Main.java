@@ -244,6 +244,18 @@ public class Main extends Application {
 		
 		Scene scene = new Scene(grid, 800, 650);
 		
+		//Makes title scene and initializes it with some instruction text and a button that takes you to the main game
+		Text instructText = new Text(20.0, 125.0, "Welcome to the game. Your goal is to make 1 billion dollars by clicking on various different jobs that net you more money as "
+			+ "you unlock them. However, the more advanced tasks you do, the more your energy will deplete.");
+		instructText.setWrappingWidth(490);
+		Button startButton = new Button("Begin");
+		startButton.setTextAlignment(TextAlignment.CENTER);
+		startButton.setOnAction(e -> {
+			primaryStage.setScene(scene);
+		});
+		VBox menuAlign = new VBox(20, instructText, startButton);
+		Scene titleScene = new Scene (menuAlign, 500, 500, Color.BLUE);
+		
 		primaryStage.setTitle("Get Rich!");
 		primaryStage.setScene(scene);
 		primaryStage.show();
