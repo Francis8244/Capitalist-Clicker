@@ -1,6 +1,8 @@
 package application;
-	
+
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.scene.text.Text;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -17,7 +19,14 @@ import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.animation.Timeline;
+import javafx.scene.paint.Color;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -27,10 +36,18 @@ public class Main extends Application {
 	Button button;
 	Button button2;
 	
-	Integer cash = 0;
+	public static Integer cash = 0;
 	
-	Integer seconds = 1;
-	
+	private boolean lemonBought = false;
+	private boolean lawnBought = false;
+	private boolean carBought = false;
+	private boolean chocolateBought = false;
+	private boolean stocksBought = false;
+	private boolean factoryBought = false;
+	private boolean goldBought = false;
+	private boolean oilBought = false;
+	private boolean starsBought = false;
+
 	@Override
 	public void start(Stage primaryStage) throws Exception{
 		window = primaryStage;
@@ -71,6 +88,21 @@ public class Main extends Application {
 		
 		//Intializing lemon worker button
 		Button lemonWorker = new Button("Buy Worker");
+		lemonWorker.setOnAction(e -> {
+			if (lemonBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 30)
+				CompleteAlertBox.display("Broke", "You need at least 30 dollars to purchase a lemonade worker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 30;
+					cashLabel.setText("Cash: " + cash.toString());
+					lemonBought = true;
+					workTimer(1, 0.1, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of lemon buttons
 		HBox lemonBox = new HBox(lemonSell, lemonWorker);
@@ -82,7 +114,7 @@ public class Main extends Application {
 		lawnmower.setFitWidth(150);
 		GridPane.setConstraints(lawnmower, 0, 4);
 		
-		//Initializing worker sell button
+		//Initializing lawnmower button
 		Button lawnmowerSell = new Button("Mow Lawn");
 		lawnmowerSell.setOnAction(e -> {
 			cash += 5;
@@ -91,6 +123,21 @@ public class Main extends Application {
 		
 		//Intializing lawnmower worker button
 		Button lawnmowerWorker = new Button("Buy Worker");
+		lawnmowerWorker.setOnAction(e -> {
+			if (lawnBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 500)
+				CompleteAlertBox.display("Broke", "You need at least 500 dollars to purchase a lawnmower worker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 500;
+					cashLabel.setText("Cash: " + cash.toString());
+					lawnBought = true;
+					workTimer(5, 0.3, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of lawnmower buttons
 		HBox lawnmowerBox = new HBox(lawnmowerSell, lawnmowerWorker);
@@ -111,6 +158,21 @@ public class Main extends Application {
 		
 		//Intializing carwash worker button
 		Button carwashWorker = new Button("Buy Worker");
+		carwashWorker.setOnAction(e -> {
+			if (carBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 4000)
+				CompleteAlertBox.display("Broke", "You need at least 4000 dollars to purchase a carwash worker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 4000;
+					cashLabel.setText("Cash: " + cash.toString());
+					carBought = true;
+					workTimer(30, 0.7, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of carwash buttons
 		HBox carwashBox = new HBox(carwashSell, carwashWorker);
@@ -131,6 +193,21 @@ public class Main extends Application {
 		
 		//Intializing chocolate worker button
 		Button chocolateWorker = new Button("Buy Worker");
+		chocolateWorker.setOnAction(e -> {
+			if (chocolateBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 15000)
+				CompleteAlertBox.display("Broke", "You need at least 15000 dollars to purchase a chocolate salesman");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 15000;
+					cashLabel.setText("Cash: " + cash.toString());
+					chocolateBought = true;
+					workTimer(100, 1.3, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of chocolate buttons
 		HBox chocolateBox = new HBox(chocolateSell, chocolateWorker);
@@ -151,6 +228,21 @@ public class Main extends Application {
 		
 		//Intializing stocks worker button
 		Button stocksWorker = new Button("Buy Worker");
+		stocksWorker.setOnAction(e -> {
+			if (stocksBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 60000)
+				CompleteAlertBox.display("Broke", "You need at least 60000 dollars to purchase a stockbroker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 60000;
+					cashLabel.setText("Cash: " + cash.toString());
+					stocksBought = true;
+					workTimer(1250, 2.0, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of stocks buttons
 		HBox stocksBox = new HBox(stocksSell, stocksWorker);
@@ -171,6 +263,21 @@ public class Main extends Application {
 		
 		//Intializing factory worker button
 		Button factoryWorker = new Button("Buy Worker");
+		factoryWorker.setOnAction(e -> {
+			if (factoryBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 250000)
+				CompleteAlertBox.display("Broke", "You need at least 250000 dollars to purchase a factory worker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 250000;
+					cashLabel.setText("Cash: " + cash.toString());
+					factoryBought = true;
+					workTimer(10000, 3.5, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of factory buttons
 		HBox factoryBox = new HBox(factorySell, factoryWorker);
@@ -191,6 +298,21 @@ public class Main extends Application {
 		
 		//Intializing gold worker button
 		Button goldWorker = new Button("Buy Worker");
+		goldWorker.setOnAction(e -> {
+			if (goldBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 1000000)
+				CompleteAlertBox.display("Broke", "You need at least 1000000 dollars to purchase a gold miner");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 1000000;
+					cashLabel.setText("Cash: " + cash.toString());
+					goldBought = true;
+					workTimer(150000, 7, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of gold buttons
 		HBox goldBox = new HBox(goldSell, goldWorker);
@@ -211,6 +333,21 @@ public class Main extends Application {
 		
 		//Intializing oil worker button
 		Button oilWorker = new Button("Buy Worker");
+		oilWorker.setOnAction(e -> {
+			if (oilBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 10000000)
+				CompleteAlertBox.display("Broke", "You need at least 10000000 dollars to purchase an oil worker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 10000000;
+					cashLabel.setText("Cash: " + cash.toString());
+					oilBought = true;
+					workTimer(1250000, 12, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of oil buttons
 		HBox oilBox = new HBox(oilSell, oilWorker);
@@ -231,13 +368,38 @@ public class Main extends Application {
 		
 		//Intializing star worker button
 		Button starWorker = new Button("Buy Worker");
+		starWorker.setOnAction(e -> {
+			if (starsBought == true)
+				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (cash < 200000000)
+				CompleteAlertBox.display("Broke", "You need at least 200000000 dollars to purchase a star worker");
+			else {
+				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				if (answer == true) {
+					cash -= 200000000;
+					cashLabel.setText("Cash: " + cash.toString());
+					starsBought = true;
+					workTimer(8000000, 15, cashLabel);
+				}
+			}
+		});
 		
 		//Initializing HBox of star buttons
 		HBox starBox = new HBox(starSell, starWorker);
 		GridPane.setConstraints(starBox, 24, 7);
 		
+		//Initializing complete button
 		Button complete = new Button("Complete");
 		GridPane.setConstraints(complete, 26, 8);
+		complete.setOnAction(e -> {
+			if (cash < 1000000000) {
+				Integer temp = (1000000000 - cash);
+				String cashString = temp.toString();
+				CompleteAlertBox.display("Broke", "You don't have enough money. You are " + cashString + " dollars off from one billion.");
+			}
+			else
+				CompleteAlertBox.display("Mogul", "Congratulations! You are the richest!");
+		});
 		
 		grid.getChildren().addAll(lemon, energyLabel, titleLabel, cashLabel, lemonBox, lawnmower, lawnmowerBox, carwash, carwashBox, chocolate, chocolateBox,
 				stocks, stocksBox, factory, factoryBox, gold, goldBox, oil, oilBox, star, starBox, complete);
@@ -246,7 +408,7 @@ public class Main extends Application {
 		
 		//Makes title scene and initializes it with some instruction text and a button that takes you to the main game
 		Text instructText = new Text(20.0, 125.0, "Welcome to the game. Your goal is to make 1 billion dollars by clicking on various different jobs that net you more money as "
-			+ "you unlock them. However, the more advanced tasks you do, the more your energy will deplete.");
+				+ "you unlock them. However, the more advanced tasks you do, the more your energy will deplete.");
 		instructText.setWrappingWidth(490);
 		Button startButton = new Button("Begin");
 		startButton.setTextAlignment(TextAlignment.CENTER);
@@ -256,9 +418,21 @@ public class Main extends Application {
 		VBox menuAlign = new VBox(20, instructText, startButton);
 		Scene titleScene = new Scene (menuAlign, 500, 500, Color.BLUE);
 		
+		
+		
+		
 		primaryStage.setTitle("Get Rich!");
-		primaryStage.setScene(scene);
+		primaryStage.setScene(titleScene);
 		primaryStage.show();
+	}
+	
+	private static void workTimer(int money, double time, Label cashLabel) {
+		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(time), ev -> {
+			cash += money;
+			cashLabel.setText("Cash: " + cash.toString());
+		}));
+		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.play();
 	}
 	
 	public static void main(String[] args) {
