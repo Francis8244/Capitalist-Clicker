@@ -3,50 +3,36 @@ package application;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.text.Text;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import javafx.animation.Timeline;
-import javafx.scene.paint.Color;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class Main extends Application {
+	
 	Stage window;
-	Button button;
-	Button button2;
 	
 	public static Integer cash = 0;
 	
-	private boolean lemonBought = false;
-	private boolean lawnBought = false;
-	private boolean carBought = false;
-	private boolean chocolateBought = false;
-	private boolean stocksBought = false;
-	private boolean factoryBought = false;
-	private boolean goldBought = false;
-	private boolean oilBought = false;
-	private boolean starsBought = false;
+	private Status lemonBought = new Status();
+	private Status lawnBought = new Status();
+	private Status carBought = new Status();
+	private Status chocolateBought = new Status();
+	private Status stocksBought = new Status();
+	private Status factoryBought = new Status();
+	private Status goldBought = new Status();
+	private Status oilBought = new Status();
+	private Status starsBought = new Status();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception{
@@ -61,12 +47,7 @@ public class Main extends Application {
 		//Initializing title label
 		Label titleLabel = new Label("Goal: 1 billion cash!");
 		titleLabel.setFont(new Font("Arial", 17));
-		GridPane.setConstraints(titleLabel, 12, 0);
-		
-		//Initiailizing energy label
-		Label energyLabel = new Label("Energy: 100");
-		energyLabel.setFont(new Font("Arial", 17));
-		GridPane.setConstraints(energyLabel, 0, 0);
+		GridPane.setConstraints(titleLabel, 0, 0);
 
 		//Initializing Cash Label
 		Label cashLabel = new Label("Cash: 0");
@@ -86,20 +67,20 @@ public class Main extends Application {
 			cashLabel.setText("Cash: " + cash.toString());
 		});
 		
-		//Intializing lemon worker button
+		//Initializing lemon worker button
 		Button lemonWorker = new Button("Buy Worker");
 		lemonWorker.setOnAction(e -> {
-			if (lemonBought == true)
+			if (lemonBought.workerCheck() == true)
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
 			else if (cash < 30)
 				CompleteAlertBox.display("Broke", "You need at least 30 dollars to purchase a lemonade worker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 30;
 					cashLabel.setText("Cash: " + cash.toString());
-					lemonBought = true;
-					workTimer(1, 0.1, cashLabel);
+					lemonBought.setWorker();
+					workTimer(1, 0.05, cashLabel);
 				}
 			}
 		});
@@ -117,24 +98,38 @@ public class Main extends Application {
 		//Initializing lawnmower button
 		Button lawnmowerSell = new Button("Mow Lawn");
 		lawnmowerSell.setOnAction(e -> {
+			if (lawnBought.taskCheck() == true) {
 			cash += 5;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 200) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 200;
+					cashLabel.setText("Cash: " + cash.toString());
+					lawnBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 200 dollars to unlock this task");
 		});
 		
-		//Intializing lawnmower worker button
+		//Initializing lawnmower worker button
 		Button lawnmowerWorker = new Button("Buy Worker");
 		lawnmowerWorker.setOnAction(e -> {
-			if (lawnBought == true)
+			if (lawnBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (lawnBought.workerCheck() == false && lawnBought.taskCheck() == false)
+					CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 500)
 				CompleteAlertBox.display("Broke", "You need at least 500 dollars to purchase a lawnmower worker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 500;
 					cashLabel.setText("Cash: " + cash.toString());
-					lawnBought = true;
-					workTimer(5, 0.3, cashLabel);
+					lawnBought.setWorker();
+					workTimer(5, 0.1, cashLabel);
 				}
 			}
 		});
@@ -152,24 +147,38 @@ public class Main extends Application {
 		//Initializing carwash sell button
 		Button carwashSell = new Button("Wash car");
 		carwashSell.setOnAction(e -> {
+			if (carBought.taskCheck() == true) {
 			cash += 30;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 1500) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 1500;
+					cashLabel.setText("Cash: " + cash.toString());
+					carBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 1500 dollars to unlock this task");
 		});
 		
-		//Intializing carwash worker button
+		//Initializing carwash worker button
 		Button carwashWorker = new Button("Buy Worker");
 		carwashWorker.setOnAction(e -> {
-			if (carBought == true)
+			if (carBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (carBought.workerCheck() == false && carBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 4000)
 				CompleteAlertBox.display("Broke", "You need at least 4000 dollars to purchase a carwash worker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 4000;
 					cashLabel.setText("Cash: " + cash.toString());
-					carBought = true;
-					workTimer(30, 0.7, cashLabel);
+					carBought.setWorker();
+					workTimer(30, 0.2, cashLabel);
 				}
 			}
 		});
@@ -187,24 +196,38 @@ public class Main extends Application {
 		//Initializing chocolate sell button
 		Button chocolateSell = new Button("Sell Bars");
 		chocolateSell.setOnAction(e -> {
+			if (chocolateBought.taskCheck() == true) {
 			cash += 100;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 4000) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 4000;
+					cashLabel.setText("Cash: " + cash.toString());
+					chocolateBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 4000 dollars to unlock this task");
 		});
 		
-		//Intializing chocolate worker button
+		//Initializing chocolate worker button
 		Button chocolateWorker = new Button("Buy Worker");
 		chocolateWorker.setOnAction(e -> {
-			if (chocolateBought == true)
+			if (chocolateBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
-			else if (cash < 15000)
-				CompleteAlertBox.display("Broke", "You need at least 15000 dollars to purchase a chocolate salesman");
+			else if (chocolateBought.workerCheck() == false && chocolateBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
+			else if (cash < 12000)
+				CompleteAlertBox.display("Broke", "You need at least 12000 dollars to purchase a chocolate salesman");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
-					cash -= 15000;
+					cash -= 12000;
 					cashLabel.setText("Cash: " + cash.toString());
-					chocolateBought = true;
-					workTimer(100, 1.3, cashLabel);
+					chocolateBought.setWorker();
+					workTimer(100, 0.4, cashLabel);
 				}
 			}
 		});
@@ -222,24 +245,38 @@ public class Main extends Application {
 		//Initializing stocks invest button
 		Button stocksSell = new Button("Buy Stock");
 		stocksSell.setOnAction(e -> {
+			if (stocksBought.taskCheck() == true) {
 			cash += 1250;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 20000) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 20000;
+					cashLabel.setText("Cash: " + cash.toString());
+					stocksBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 20000 dollars to unlock this task");
 		});
 		
-		//Intializing stocks worker button
+		//Initializing stocks worker button
 		Button stocksWorker = new Button("Buy Worker");
 		stocksWorker.setOnAction(e -> {
-			if (stocksBought == true)
+			if (stocksBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (stocksBought.workerCheck() == false && stocksBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 60000)
 				CompleteAlertBox.display("Broke", "You need at least 60000 dollars to purchase a stockbroker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 60000;
 					cashLabel.setText("Cash: " + cash.toString());
-					stocksBought = true;
-					workTimer(1250, 2.0, cashLabel);
+					stocksBought.setWorker();
+					workTimer(1250, 0.6, cashLabel);
 				}
 			}
 		});
@@ -257,24 +294,38 @@ public class Main extends Application {
 		//Initializing factory invest button
 		Button factorySell = new Button("Work Plant");
 		factorySell.setOnAction(e -> {
+			if (factoryBought.taskCheck() == true) {
 			cash += 10000;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 125000) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 125000;
+					cashLabel.setText("Cash: " + cash.toString());
+					factoryBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 125000 dollars to unlock this task");
 		});
 		
-		//Intializing factory worker button
+		//Initializing factory worker button
 		Button factoryWorker = new Button("Buy Worker");
 		factoryWorker.setOnAction(e -> {
-			if (factoryBought == true)
+			if (factoryBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (factoryBought.workerCheck() == false && factoryBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 250000)
 				CompleteAlertBox.display("Broke", "You need at least 250000 dollars to purchase a factory worker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 250000;
 					cashLabel.setText("Cash: " + cash.toString());
-					factoryBought = true;
-					workTimer(10000, 3.5, cashLabel);
+					factoryBought.setWorker();;
+					workTimer(10000, 0.8, cashLabel);
 				}
 			}
 		});
@@ -292,24 +343,38 @@ public class Main extends Application {
 		//Initializing gold sell button
 		Button goldSell = new Button("Mine Gold");
 		goldSell.setOnAction(e -> {
+			if (goldBought.taskCheck() == true) {
 			cash += 150000;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 150000) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 150000;
+					cashLabel.setText("Cash: " + cash.toString());
+					goldBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 150000 dollars to unlock this task");
 		});
 		
-		//Intializing gold worker button
+		//Initializing gold worker button
 		Button goldWorker = new Button("Buy Worker");
 		goldWorker.setOnAction(e -> {
-			if (goldBought == true)
+			if (goldBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (goldBought.workerCheck() == false && goldBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 1000000)
 				CompleteAlertBox.display("Broke", "You need at least 1000000 dollars to purchase a gold miner");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 1000000;
 					cashLabel.setText("Cash: " + cash.toString());
-					goldBought = true;
-					workTimer(150000, 7, cashLabel);
+					goldBought.setWorker();
+					workTimer(150000, 1.0, cashLabel);
 				}
 			}
 		});
@@ -327,24 +392,38 @@ public class Main extends Application {
 		//Initializing oil sell button
 		Button oilSell = new Button("Extract Oil");
 		oilSell.setOnAction(e -> {
+			if (oilBought.taskCheck() == true) {
 			cash += 1250000;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 3000000) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 3000000;
+					cashLabel.setText("Cash: " + cash.toString());
+					oilBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 3000000 dollars to unlock this task");
 		});
 		
-		//Intializing oil worker button
+		//Initializing oil worker button
 		Button oilWorker = new Button("Buy Worker");
 		oilWorker.setOnAction(e -> {
-			if (oilBought == true)
+			if (oilBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (oilBought.workerCheck() == false && oilBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 10000000)
 				CompleteAlertBox.display("Broke", "You need at least 10000000 dollars to purchase an oil worker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 10000000;
 					cashLabel.setText("Cash: " + cash.toString());
-					oilBought = true;
-					workTimer(1250000, 12, cashLabel);
+					oilBought.setWorker();;
+					workTimer(1250000, 1.0, cashLabel);
 				}
 			}
 		});
@@ -362,24 +441,38 @@ public class Main extends Application {
 		//Initializing star sell button
 		Button starSell = new Button("Mine Stars");
 		starSell.setOnAction(e -> {
+			if (starsBought.taskCheck() == true) {
 			cash += 8000000;
 			cashLabel.setText("Cash: " + cash.toString());
+			}
+			else if (cash > 7000000) {
+				boolean answer = Unlock.display("Unlock", "You have enough cash to unlock this task. Would you like to buy it?");
+				if (answer == true) {
+					cash -= 7000000;
+					cashLabel.setText("Cash: " + cash.toString());
+					starsBought.setTask();
+				}
+			}
+			else 
+				CompleteAlertBox.display("Broke",  "You need at least 7000000 dollars to unlock this task");
 		});
 		
-		//Intializing star worker button
+		//Initializing star worker button
 		Button starWorker = new Button("Buy Worker");
 		starWorker.setOnAction(e -> {
-			if (starsBought == true)
+			if (starsBought.workerCheck() == true) 
 				CompleteAlertBox.display("Bought", "You have already purchased this worker");
+			else if (starsBought.workerCheck() == false && starsBought.taskCheck() == false)
+				CompleteAlertBox.display("Error", "Unlock the task before you buy the worker!");
 			else if (cash < 200000000)
 				CompleteAlertBox.display("Broke", "You need at least 200000000 dollars to purchase a star worker");
 			else {
-				boolean answer = Worker.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
+				boolean answer = Unlock.display("Hiring", "You have enough cash to purchase a worker. Would you like to buy one?");
 				if (answer == true) {
 					cash -= 200000000;
 					cashLabel.setText("Cash: " + cash.toString());
-					starsBought = true;
-					workTimer(8000000, 15, cashLabel);
+					starsBought.setWorker();;
+					workTimer(8000000, 1.0, cashLabel);
 				}
 			}
 		});
@@ -401,14 +494,15 @@ public class Main extends Application {
 				CompleteAlertBox.display("Mogul", "Congratulations! You are the richest!");
 		});
 		
-		grid.getChildren().addAll(lemon, energyLabel, titleLabel, cashLabel, lemonBox, lawnmower, lawnmowerBox, carwash, carwashBox, chocolate, chocolateBox,
+		grid.getChildren().addAll(lemon, titleLabel, cashLabel, lemonBox, lawnmower, lawnmowerBox, carwash, carwashBox, chocolate, chocolateBox,
 				stocks, stocksBox, factory, factoryBox, gold, goldBox, oil, oilBox, star, starBox, complete);
 		
 		Scene scene = new Scene(grid, 800, 650);
 		
 		//Makes title scene and initializes it with some instruction text and a button that takes you to the main game
 		Text instructText = new Text(20.0, 125.0, "Welcome to the game. Your goal is to make 1 billion dollars by clicking on various different jobs that net you more money as "
-				+ "you unlock them. However, the more advanced tasks you do, the more your energy will deplete.");
+				+ "you unlock them. You will also be able to hire workers to help you along your journey of becoming a billionare. When you have finally reached 1 billion "
+				+ "dollars, click on the complete button on the bottom right side of the screen.");
 		instructText.setWrappingWidth(490);
 		Button startButton = new Button("Begin");
 		startButton.setTextAlignment(TextAlignment.CENTER);
@@ -416,7 +510,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 		});
 		VBox menuAlign = new VBox(20, instructText, startButton);
-		Scene titleScene = new Scene (menuAlign, 500, 500, Color.BLUE);
+		Scene titleScene = new Scene (menuAlign, 500, 110);
 		
 		
 		
@@ -426,6 +520,7 @@ public class Main extends Application {
 		primaryStage.show();
 	}
 	
+	//Private helper method that sets the timers of each worker for each specific task
 	private static void workTimer(int money, double time, Label cashLabel) {
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(time), ev -> {
 			cash += money;
